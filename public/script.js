@@ -12,11 +12,12 @@ document.getElementById('tokenForm').addEventListener('submit', async function(e
 
   const name = document.getElementById('name').value;
   const department = document.getElementById('department').value;
+  const email = document.getElementById('email').value;
 
   const res = await fetch('/api/tokens', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, department })
+    body: JSON.stringify({ name, department, email })
   });
 
   const newToken = await res.json();
