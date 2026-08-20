@@ -1,9 +1,10 @@
 const socket = io();
+let allTokens = [];
 
 async function loadQueue() {
   const res = await fetch('/api/tokens');
-  const tokens = await res.json();
-  renderQueue(tokens);
+  allTokens = await res.json();
+  renderQueue();
 }
 
 document.getElementById('tokenForm').addEventListener('submit', async function(e) {
@@ -21,16 +22,27 @@ document.getElementById('tokenForm').addEventListener('submit', async function(e
   const newToken = await res.json();
 
   const resultDiv = document.getElementById('result');
-  resultDiv.innerText = `✅ Token #${newToken.id} generated for ${newToken.name} (${newToken.department})`;
+  resultDiv.innerHTML = `✅ Token #${newToken.id} generated for ${newToken.name} (${newToken.department})`;
   resultDiv.classList.add('show');
+
+  // Fetch and show the QR code for this token
+  const qrRes = await fetch(`/api/qrcode/${newToken.id}/${encodeURIComponent(newToken.department)}`);
+  const qrData = await qrRes.json();
+
+  const qrContainer = document.getElementById('qrContainer');
+  qrContainer.innerHTML = `
+    <p style="margin-top:16px; font-size:13px; color:#6b7280;">📱 Scan to track your status live:</p>
+    <img src="${qrData.qrDataUrl}" alt="QR Code" style="width:150px; height:150px; margin-top:8px; border-radius:8px;">
+    <p style="margin-top:8px;"><a href="${qrData.statusUrl}" target="_blank" style="font-size:12px; color:#667eea;">Or tap here to open status page</a></p>
+  `;
 
   document.getElementById('tokenForm').reset();
 });
 
-function renderQueue(tokens) {
+function renderQueue() {
   const list = document.getElementById('queueList');
   list.innerHTML = '';
-  tokens.forEach(token => {
+  allTokens.forEach(token => {
     const li = document.createElement('li');
     let text = `Token #${token.id} — ${token.name} (${token.department}) — ${token.status}`;
     if (token.status === 'Waiting' && token.estimatedWaitMinutes) {
@@ -41,7 +53,10 @@ function renderQueue(tokens) {
     list.appendChild(li);
   });
 }
-// Live updates from server — no refresh needed
-socket.on('queueUpdate', renderQueue);
+
+socket.on('queueUpdate', function(tokens) {
+  allTokens = tokens;
+  renderQueue();
+});
 
 loadQueue();

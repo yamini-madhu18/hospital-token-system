@@ -7,6 +7,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const QRCode = require('qrcode');
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
@@ -146,6 +147,43 @@ app.get('/api/tokens', async (req, res) => {
 });
 
 app.get('/api/departments', (req, res) => res.json(DEPARTMENTS));
+
+// Generate a QR code (as an image) linking to a token's live status page
+app.get('/api/qrcode/:tokenId/:department', async (req, res) => {
+  const { tokenId, department } = req.params;
+  const statusUrl = `${req.protocol}://${req.get('host')}/status.html?id=${tokenId}&dept=${encodeURIComponent(department)}`;
+
+  try {
+    const qrDataUrl = await QRCode.toDataURL(statusUrl);
+    res.json({ qrDataUrl, statusUrl });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+});
+
+// Get a single token's live status (for the mobile status page)
+app.get('/api/token-status/:tokenId/:department', async (req, res) => {
+  const { tokenId, department } = req.params;
+  const myToken = await Token.findOne({ id: Number(tokenId), department });
+  if (!myToken) return res.status(404).json({ error: 'Token not found' });
+
+  const currentServing = await Token.findOne({ department, status: 'In Progress' });
+  const waitingAhead = await Token.countDocuments({
+    department,
+    status: 'Waiting',
+    createdAt: { $lt: myToken.createdAt }
+  });
+
+  const avgMinutes = await getAverageMinutes(department);
+
+  res.json({
+    token: myToken,
+    currentServingId: currentServing ? currentServing.id : null,
+    peopleAhead: myToken.status === 'Waiting' ? waitingAhead : 0,
+    estimatedWaitMinutes: myToken.status === 'Waiting' ? waitingAhead * avgMinutes : 0
+  });
+});
+
 
 // Doctor calls next patient — ONLY in their own department, enforced by session
 app.post('/api/call-next', requireDoctor, async (req, res) => {
