@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Login - Hospital Token System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Staff Login</h1>
+    <p class="subtitle">Doctors and reception staff only</p>
+
+    <form id="loginForm">
+      <label for="username">Username</label>
+      <input type="text" id="username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required>
+
+      <button type="submit">Log In</button>
+    </form>
+
+    <div id="loginError" style="color:#ef4444; margin-top:14px; font-size:13px;"></div>
+
+    <a href="index.html" class="backLink">⬅ Back to Registration</a>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

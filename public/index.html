@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Hospital Token System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🏥 Smart Hospital Token System</h1>
+    <p class="subtitle">Register to get your token number</p>
+
+    <form id="tokenForm">
+      <label for="name">Patient Name</label>
+      <input type="text" id="name" placeholder="Enter your name" required>
+
+      <label for="department">Department</label>
+      <select id="department" required>
+        <option value="">-- Select Department --</option>
+        <option value="General">General</option>
+        <option value="Cardiology">Cardiology</option>
+        <option value="Orthopedics">Orthopedics</option>
+        <option value="Pediatrics">Pediatrics</option>
+      </select>
+
+      <button type="submit">Get Token</button>
+    </form>
+
+    <div id="result"></div>
+
+    <h3 class="queueTitle">🧾 Current Queue</h3>
+    <ul id="queueList"></ul>
+
+    <a href="admin.html" class="backLink">Staff Login →</a>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

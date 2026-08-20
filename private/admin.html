@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Console - Hospital Token System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>👩‍⚕️ Doctor Console</h1>
+    <p class="subtitle" id="whoAmI">Loading...</p>
+
+    <h2 id="nowServing">Now Serving: None</h2>
+
+    <button id="callNextBtn">Call Next Token</button>
+    <button id="resetBtn" class="resetBtn">Reset Entire Queue</button>
+    <button id="logoutBtn" class="resetBtn" style="border-color:#6b7280; color:#6b7280;">Log Out</button>
+
+    <h3 class="queueTitle">🧾 Queue for this Department</h3>
+    <ul id="adminQueueList"></ul>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>
